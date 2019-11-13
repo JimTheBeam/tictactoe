@@ -1,4 +1,4 @@
 /env
 settings.py
-bot.log
+*.log
 __pycache__

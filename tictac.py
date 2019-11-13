@@ -1,6 +1,5 @@
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram.ext import messagequeue as mq
 
 import settings
 
@@ -23,7 +22,8 @@ logger = logging.getLogger(__name__)
 def start(update, context):
     text = '''Вас приветствует новый бот! /start
 Нажмите /subscribe для подписки
-Нажмите /unsubscribe если хотите отписаться'''
+Нажмите /unsubscribe если хотите отписаться
+Нажмите /alarm чтобы установить будильник'''
     logging.info('/start')
 
     update.message.reply_text(text)
@@ -64,13 +64,26 @@ def send_updates(context):
         bot.send_message(chat_id=chat_id, text='annoying message')
 
 
+def set_alarm(update, context):
+    job_queue = context.job_queue
+    args = context.args
+    try:
+        seconds = abs(int(args[0]))
+        job_queue.run_once(alarm, seconds, context=update.message.chat_id)
+    except(IndexError, ValueError):
+        update.message.reply_text('Введите число секунтд после команды /alarm')
 
+def alarm(context):
+    job = context.job
+    context.bot.send_message(chat_id=job.context, text='Сработал будильник')
 
 
 
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=settings.PROXY)
+
+
 
     mybot.job_queue.run_repeating(send_updates, interval=5)
     
@@ -81,6 +94,7 @@ def main():
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
+    dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
 
 
 
