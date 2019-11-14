@@ -1,5 +1,9 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,\
+        CallbackQueryHandler
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup,\
+    ReplyKeyboardRemove
 
 import settings
 
@@ -17,6 +21,10 @@ logging.info('bot started')
 
 logger = logging.getLogger(__name__)
 
+# keyboard:
+def my_keyboard():
+    keyboard = ReplyKeyboardMarkup([['Show inLine keyboard']], resize_keyboard=True)
+    return keyboard
 
 
 def start(update, context):
@@ -26,7 +34,7 @@ def start(update, context):
 Нажмите /alarm чтобы установить будильник'''
     logging.info('/start')
 
-    update.message.reply_text(text)
+    update.message.reply_text(text, reply_markup=my_keyboard())
 
 
 # def my_test(context):
@@ -63,7 +71,7 @@ def send_updates(context):
     for chat_id in subscribers:
         bot.send_message(chat_id=chat_id, text='annoying message')
 
-
+# this function sets alarm
 def set_alarm(update, context):
     job_queue = context.job_queue
     args = context.args
@@ -73,9 +81,21 @@ def set_alarm(update, context):
     except(IndexError, ValueError):
         update.message.reply_text('Введите число секунтд после команды /alarm')
 
+# send alarm message was set 'set_alarm' function
 def alarm(context):
     job = context.job
     context.bot.send_message(chat_id=job.context, text='Сработал будильник')
+
+# show inLine keyboard
+def show_inline(update, context):
+    inlinekeyboard = [[InlineKeyboardButton('Funny', callback_data="1"),
+                        InlineKeyboardButton('Not funny', callback_data="0")]]
+    keyboard = InlineKeyboardMarkup(inlinekeyboard)
+
+    # bot = context.bot
+    # bot.send_message('Some joke', reply_markup=keyboard)
+
+    update.message.reply_text(text='Some joke', reply_markup=keyboard)
 
 
 
@@ -95,6 +115,7 @@ def main():
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
+    dp.add_handler(MessageHandler(Filters.regex('^(Show inLine keyboard)$'), show_inline))
 
 
 
