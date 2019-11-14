@@ -97,7 +97,16 @@ def show_inline(update, context):
 
     update.message.reply_text(text='Some joke', reply_markup=keyboard)
 
-
+def inline_button_pressed(update, context):
+    query = update.callback_query
+    try:
+        user_choice = int(query.data)
+        text = ':-)' if user_choice > 0 else ':-('
+    except TypeError:
+        text = 'Что-то пошло не так'
+    
+    context.bot.edit_message_text(text=text, chat_id=query.message.chat_id,
+                         message_id=query.message.message_id)
 
 
 def main():
@@ -116,6 +125,8 @@ def main():
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
     dp.add_handler(MessageHandler(Filters.regex('^(Show inLine keyboard)$'), show_inline))
+    # this handler catches signal when inline keyboard button is pressed
+    dp.add_handler(CallbackQueryHandler(inline_button_pressed))
 
 
 
