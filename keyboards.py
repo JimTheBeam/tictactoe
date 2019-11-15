@@ -2,8 +2,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
     ReplyKeyboardRemove
 
 
-
-
 # keyboard:
 def my_keyboard():
     keyboard = ReplyKeyboardMarkup([['Play TicTacToe']], resize_keyboard=True)
@@ -12,59 +10,29 @@ def my_keyboard():
 
 # inline keyboards:
 # buttons:
-text_none = ' '
+text_none = '_'
 text_o = 'O'
 text_x = 'X'
 
 button_text = text_none
 
-# def button1(button_text):
-#     button = {'button1' : {'text' : button_text, 'callback_data' : '1'}}
-#     return button
-
-# def button2(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button3(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button4(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button5(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button6(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button7(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button8(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
-
-# def button9(button_text):
-#     button = InlineKeyboardButton(button_text, callback_data='1')
-#     return button
+def error_keyboard():
+    button = [[InlineKeyboardButton('Что-то пошло не так', callback_data=0)]]
+    keyboard = InlineKeyboardMarkup(button)
+    return keyboard
 
 
-def inline_keys():
-    buttons = ['button1', 'button2', 'button3', 
-                      'button4', 'button5', 'button6',
-                      'button7', 'button8', 'button9']
+def inline_keys(bt1=text_none, bt2=text_none, bt3=text_none, bt4=text_none, bt5=text_none, 
+        bt6=text_none, bt7=text_none, bt8=text_none, bt9=text_none):
+    buttons = [bt1, bt2, bt3, 
+               bt4, bt5, bt6,
+               bt7, bt8, bt9]
     return buttons
 
 def inline_keys2():
     buttons = ['1', '2', '3', 
-                      '4', '5', '6',
-                      '7', '8', '9']
+                '4', '5', '6',
+                '7', '8', '9']
     return buttons
 
 def tictac_keyb(*args):

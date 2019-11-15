@@ -7,7 +7,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 
 import settings
 
-from keyboards import my_keyboard, tictac_keyb, inline_keys, inline_keys2
+from keyboards import my_keyboard, tictac_keyb, inline_keys, inline_keys2,\
+        text_x, text_o, error_keyboard
 
 '''This is telegram bot created for playing tictactoe'''
 
@@ -80,15 +81,26 @@ def start_game(update, context):
 
 def inline_button_pressed(update, context):
     query = update.callback_query
-    # try:
-    #     user_choice = int(query.data)
-    #     text = ':-)' if user_choice > 0 else ':-('
-    # except TypeError:
-    #     text = 'Что-то пошло не так'
+
+    button = ['_', '_', '_', 
+              '_', '_', '_',
+              '_', '_', '_']
+
+    try:
+        user_choice = int(query.data)
+        button[user_choice-1] = text_x
+        keyboard = tictac_keyb(*button)
+
+    except TypeError:
+        keyboard = error_keyboard
 
     context.bot.edit_message_reply_markup(chat_id=query.message.chat_id, 
                 message_id=query.message.message_id,
-                reply_markup=tictac_keyb(*inline_keys2()))
+                reply_markup=keyboard)
+
+    # context.bot.edit_message_reply_markup(chat_id=query.message.chat_id, 
+    #             message_id=query.message.message_id,
+    #             reply_markup=tictac_keyb(*inline_keys2()))
     
 
 
