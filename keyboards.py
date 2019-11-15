@@ -61,6 +61,12 @@ def inline_keys():
                       'button7', 'button8', 'button9']
     return buttons
 
+def inline_keys2():
+    buttons = ['1', '2', '3', 
+                      '4', '5', '6',
+                      '7', '8', '9']
+    return buttons
+
 def tictac_keyb(*args):
     button1 = InlineKeyboardButton(args[0], callback_data='1')
     button2 = InlineKeyboardButton(args[1], callback_data='2')

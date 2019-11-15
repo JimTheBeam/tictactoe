@@ -7,7 +7,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 
 import settings
 
-from keyboards import my_keyboard, tictac_keyb, inline_keys
+from keyboards import my_keyboard, tictac_keyb, inline_keys, inline_keys2
 
 '''This is telegram bot created for playing tictactoe'''
 
@@ -74,25 +74,22 @@ def alarm(context):
     job = context.job
     context.bot.send_message(chat_id=job.context, text='Сработал будильник')
 
-# show inLine keyboard
-def show_inline(update, context):
-    # по хорошему эту клаву нужно удалить и перенести в файл
-    # inlinekeyboard = [[InlineKeyboardButton('Funny', callback_data="1"),
-    #                     InlineKeyboardButton('Not funny', callback_data="0")]]
-    # keyboard = InlineKeyboardMarkup(inlinekeyboard)
-
+# starts the game 
+def start_game(update, context):
     update.message.reply_text(text='TicTacToe ', reply_markup=tictac_keyb(*inline_keys()))
 
 def inline_button_pressed(update, context):
     query = update.callback_query
-    try:
-        user_choice = int(query.data)
-        text = ':-)' if user_choice > 0 else ':-('
-    except TypeError:
-        text = 'Что-то пошло не так'
+    # try:
+    #     user_choice = int(query.data)
+    #     text = ':-)' if user_choice > 0 else ':-('
+    # except TypeError:
+    #     text = 'Что-то пошло не так'
+
+    context.bot.edit_message_reply_markup(chat_id=query.message.chat_id, 
+                message_id=query.message.message_id,
+                reply_markup=tictac_keyb(*inline_keys2()))
     
-    context.bot.edit_message_text(text=text, chat_id=query.message.chat_id,
-                         message_id=query.message.message_id)
 
 
 def main():
@@ -110,7 +107,7 @@ def main():
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
-    dp.add_handler(MessageHandler(Filters.regex('^(Play TicTacToe)$'), show_inline))
+    dp.add_handler(MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game))
     # this handler catches signal when inline keyboard button is pressed
     dp.add_handler(CallbackQueryHandler(inline_button_pressed))
 
