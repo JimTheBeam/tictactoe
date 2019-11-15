@@ -7,6 +7,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 
 import settings
 
+from keyboards import my_keyboard, tictac_keyb, inline_keys
+
 '''This is telegram bot created for playing tictactoe'''
 
 subscribers = set()
@@ -21,10 +23,7 @@ logging.info('bot started')
 
 logger = logging.getLogger(__name__)
 
-# keyboard:
-def my_keyboard():
-    keyboard = ReplyKeyboardMarkup([['Show inLine keyboard']], resize_keyboard=True)
-    return keyboard
+
 
 
 def start(update, context):
@@ -37,17 +36,6 @@ def start(update, context):
     update.message.reply_text(text, reply_markup=my_keyboard())
 
 
-# def my_test(context):
-#     chat_id = 91343042
-#     bot = context.bot
-#     bot.send_message(chat_id=chat_id, text='I love spam!')
-
-#     job = context.job
-#     job.interval += 5
-#     if job.interval >=20:
-#         bot.send_message(chat_id=chat_id, text='bye')
-#         job.schedule_removal()
-#         logging.info('interval >= 20. bye')
     
 def subscribe(update, context):
     chat_id = update.message.chat_id
@@ -88,14 +76,12 @@ def alarm(context):
 
 # show inLine keyboard
 def show_inline(update, context):
-    inlinekeyboard = [[InlineKeyboardButton('Funny', callback_data="1"),
-                        InlineKeyboardButton('Not funny', callback_data="0")]]
-    keyboard = InlineKeyboardMarkup(inlinekeyboard)
+    # по хорошему эту клаву нужно удалить и перенести в файл
+    # inlinekeyboard = [[InlineKeyboardButton('Funny', callback_data="1"),
+    #                     InlineKeyboardButton('Not funny', callback_data="0")]]
+    # keyboard = InlineKeyboardMarkup(inlinekeyboard)
 
-    # bot = context.bot
-    # bot.send_message('Some joke', reply_markup=keyboard)
-
-    update.message.reply_text(text='Some joke', reply_markup=keyboard)
+    update.message.reply_text(text='TicTacToe ', reply_markup=tictac_keyb(*inline_keys()))
 
 def inline_button_pressed(update, context):
     query = update.callback_query
@@ -116,7 +102,7 @@ def main():
 
     mybot.job_queue.run_repeating(send_updates, interval=5)
     
-    # mybot.job_queue.run_repeating(my_test, interval=5)
+
 
     dp = mybot.dispatcher
 
@@ -124,7 +110,7 @@ def main():
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
-    dp.add_handler(MessageHandler(Filters.regex('^(Show inLine keyboard)$'), show_inline))
+    dp.add_handler(MessageHandler(Filters.regex('^(Play TicTacToe)$'), show_inline))
     # this handler catches signal when inline keyboard button is pressed
     dp.add_handler(CallbackQueryHandler(inline_button_pressed))
 
