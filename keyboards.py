@@ -29,11 +29,7 @@ def inline_keys(bt1=text_none, bt2=text_none, bt3=text_none, bt4=text_none, bt5=
                bt7, bt8, bt9]
     return buttons
 
-def inline_keys2():
-    buttons = ['1', '2', '3', 
-                '4', '5', '6',
-                '7', '8', '9']
-    return buttons
+
 
 def tictac_keyb(*args):
     button1 = InlineKeyboardButton(args[0], callback_data='1')
@@ -46,9 +42,11 @@ def tictac_keyb(*args):
     button8 = InlineKeyboardButton(args[7], callback_data='8')
     button9 = InlineKeyboardButton(args[8], callback_data='9')
     
-    buttons = [[button1, button2, button3], 
-                    [button4, button5, button6],
-                    [button7, button8, button9]]
+    buttons = [
+        [button1, button2, button3], 
+        [button4, button5, button6],
+        [button7, button8, button9]
+        ]
 
     keyboard = InlineKeyboardMarkup(buttons)
     return keyboard

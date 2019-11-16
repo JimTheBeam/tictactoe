@@ -7,8 +7,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 
 import settings
 
-from keyboards import my_keyboard, tictac_keyb, inline_keys, inline_keys2,\
+from keyboards import my_keyboard, tictac_keyb, inline_keys,\
         text_x, text_o, error_keyboard
+
+from game_logic import inline_button_pressed, start_game
 
 '''This is telegram bot created for playing tictactoe'''
 
@@ -37,14 +39,14 @@ def start(update, context):
     update.message.reply_text(text, reply_markup=my_keyboard())
 
 
-    
+# subscribe for user means to get "annoing message" every 5 seconds
 def subscribe(update, context):
     chat_id = update.message.chat_id
     # write chat_id in set 'subscribers'
     subscribers.add(chat_id)
     update.message.reply_text('subscribe is done')
-    # print(subscribers)
 
+# unsubscribe from "annoing message"
 def unsubscribe(update, context):
     chat_id = update.message.chat_id
     bot = context.bot
@@ -54,7 +56,7 @@ def unsubscribe(update, context):
     else :
         bot.send_message(chat_id=chat_id, text='you have not subscribed yet. Click /subscribe')
 
-
+# this func send "annoing message" to user if subscribe is done
 def send_updates(context):
     bot = context.bot
     for chat_id in subscribers:
@@ -75,33 +77,11 @@ def alarm(context):
     job = context.job
     context.bot.send_message(chat_id=job.context, text='Сработал будильник')
 
-# starts the game 
-def start_game(update, context):
-    update.message.reply_text(text='TicTacToe ', reply_markup=tictac_keyb(*inline_keys()))
 
-def inline_button_pressed(update, context):
-    query = update.callback_query
 
-    button = ['_', '_', '_', 
-              '_', '_', '_',
-              '_', '_', '_']
 
-    try:
-        user_choice = int(query.data)
-        button[user_choice-1] = text_x
-        keyboard = tictac_keyb(*button)
-
-    except TypeError:
-        keyboard = error_keyboard
-
-    context.bot.edit_message_reply_markup(chat_id=query.message.chat_id, 
-                message_id=query.message.message_id,
-                reply_markup=keyboard)
-
-    # context.bot.edit_message_reply_markup(chat_id=query.message.chat_id, 
-    #             message_id=query.message.message_id,
-    #             reply_markup=tictac_keyb(*inline_keys2()))
-    
+def error(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
@@ -124,7 +104,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(inline_button_pressed))
 
 
-
+    dp.add_error_handler(error)
     
     mybot.start_polling()
     mybot.idle()
