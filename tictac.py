@@ -1,6 +1,6 @@
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,\
-        CallbackQueryHandler
+        CallbackQueryHandler, ConversationHandler
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup,\
     ReplyKeyboardRemove
@@ -78,12 +78,15 @@ def alarm(context):
     context.bot.send_message(chat_id=job.context, text='Сработал будильник')
 
 
-
-
 def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
+
+
+
+
+# main function that starts bot
 def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=settings.PROXY)
 
@@ -99,9 +102,22 @@ def main():
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm, pass_job_queue=True, pass_args=True))
-    dp.add_handler(MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game))
+
+    game_handler = ConversationHandler(
+            entry_points=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game)],
+            states={
+                'GAME' : [CallbackQueryHandler(inline_button_pressed)]
+            },
+            fallbacks=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game)]
+            )
+    dp.add_handler(game_handler)
+
+
+    # dp.add_handler(MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game))
+
+
     # this handler catches signal when inline keyboard button is pressed
-    dp.add_handler(CallbackQueryHandler(inline_button_pressed))
+    # dp.add_handler(CallbackQueryHandler(inline_button_pressed))
 
 
     dp.add_error_handler(error)
