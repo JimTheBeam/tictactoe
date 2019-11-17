@@ -10,7 +10,7 @@ import settings
 from keyboards import my_keyboard, tictac_keyb, inline_keys,\
         text_x, text_o, error_keyboard
 
-from game_logic import inline_button_pressed, start_game
+from game_logic import game, start_game
 
 '''This is telegram bot created for playing tictactoe'''
 
@@ -106,7 +106,7 @@ def main():
     game_handler = ConversationHandler(
             entry_points=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game)],
             states={
-                'GAME' : [CallbackQueryHandler(inline_button_pressed)]
+                'GAME' : [CallbackQueryHandler(game)]
             },
             fallbacks=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game),
             CommandHandler('start', start)]

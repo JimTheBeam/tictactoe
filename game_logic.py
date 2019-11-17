@@ -24,73 +24,44 @@ def start_game(update, context):
 
 
 
-# check if there are two 'X' in one row and one vacant place
-# return True or False
-def check_two_x_in_row(button):
-    lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
-    for i in lines:
-        if button[i[0]] == button[i[1]] == text_x or\
-            button[i[0]] == button[i[2]] == text_x or\
-            button[i[1]] == button[i[2]] == text_x:
-            for f in i:
-                if button[f] == text_none:
-                    return True
-    return False
-
-
 # add 'O' to the fild to block user's two 'X'
+# or add 'O' to win the game
 # return list of buttons that contains 'O'
-def add_o_if_two_x_in_row(button):
+def add_o_if_two_in_row(button, text):
     lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
     for i in lines:
-        if button[i[0]] == button[i[1]] == text_x or\
-            button[i[0]] == button[i[2]] == text_x or\
-            button[i[1]] == button[i[2]] == text_x:
+        if button[i[0]] == button[i[1]] == text or\
+            button[i[0]] == button[i[2]] == text or\
+            button[i[1]] == button[i[2]] == text:
             for f in i:
                 if button[f] == text_none:
                     button[f] = text_o
                     return button
 
 
-# check if there are two 'O' in one row and one vacant place
+# check if there are two 'O' or 'X' in one row and one vacant place
 # return True or False
-def check_two_o_in_row(button):
+def check_two_in_row(button, text):
     lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
     for i in lines:
-        if button[i[0]] == button[i[1]] == text_o or\
-            button[i[0]] == button[i[2]] == text_o or\
-            button[i[1]] == button[i[2]] == text_o:
+        if button[i[0]] == button[i[1]] == text or\
+            button[i[0]] == button[i[2]] == text or\
+            button[i[1]] == button[i[2]] == text:
             for f in i:
                 if button[f] == text_none:
                     return True
     return False
-
-
-# add 'O' on the fild to win
-# return list of buttons that contains 'O'
-def add_o_if_two_o_in_row(button):
-    lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
-    for i in lines:
-        if button[i[0]] == button[i[1]] == text_o or\
-            button[i[0]] == button[i[2]] == text_o or\
-            button[i[1]] == button[i[2]] == text_o:
-            for f in i:
-                if button[f] == text_none:
-                    button[f] = text_o
-                    return button
-
-
 
 
 
 # func add 'O' in game keyboard
 def add_o(button):
-    if check_two_o_in_row(button):
-        button = add_o_if_two_o_in_row(button)
+    if check_two_in_row(button, text_o):
+        button = add_o_if_two_in_row(button, text_o)
         return button
     else:
-        if check_two_x_in_row(button):
-            button = add_o_if_two_x_in_row(button)
+        if check_two_in_row(button, text_x):
+            button = add_o_if_two_in_row(button, text_x)
             return button
         else:
             while True:
@@ -124,9 +95,9 @@ def check_bot_win(button):
 
 
 
-
+# main function of the game
 # catch if inline keyboard button is pressed
-def inline_button_pressed(update, context):
+def game(update, context):
     query = update.callback_query
     user_data = context.user_data
 
@@ -135,8 +106,6 @@ def inline_button_pressed(update, context):
         user_data['buttons'] = inline_keys()
     else:
         button = user_data['buttons']
-
-    # print('на входе в функцию: ' + str(button))
 
 
     # add user's X to keyboard
@@ -153,11 +122,6 @@ def inline_button_pressed(update, context):
         keyboard = error_keyboard()
 
 
-    # print('После добавления Х: ' + str(button))
-
-
-
-
     # check if user won. (3 in a row)
     if check_user_win(button) == False:
         pass
@@ -166,9 +130,6 @@ def inline_button_pressed(update, context):
                 chat_id=query.message.chat_id, 
                 message_id=query.message.message_id)
         return ConversationHandler.END
-
-    # print('После проверки победы пользователя: ' + str(button))
-
 
 
     # check if fild is full:
@@ -179,11 +140,9 @@ def inline_button_pressed(update, context):
         return ConversationHandler.END
 
 
-
     # bot add 'O' to keyboard
     button = add_o(button)
     keyboard = tictac_keyb(*button)
-    # print('на выходе после всего и добавления "O" button = ' + str(button))
 
 
     # check if bot won. (3 in a row)
