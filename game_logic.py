@@ -21,10 +21,26 @@ def start_game(update, context):
 
     return 'GAME'
 
-# check if there is two 'X' in a row
-def check_two_in_row(button):
-    # button_true = button[::]
-    # print('check 2 в ряд запущена.' + str(button_true))
+
+
+
+# check if there are two 'X' in one row and one vacant place
+# return True or False
+def check_two_x_in_row(button):
+    lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
+    for i in lines:
+        if button[i[0]] == button[i[1]] == text_x or\
+            button[i[0]] == button[i[2]] == text_x or\
+            button[i[1]] == button[i[2]] == text_x:
+            for f in i:
+                if button[f] == text_none:
+                    return True
+    return False
+
+
+# add 'O' to the fild to block user's two 'X'
+# return list of buttons that contains 'O'
+def add_o_if_two_x_in_row(button):
     lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
     for i in lines:
         if button[i[0]] == button[i[1]] == text_x or\
@@ -33,14 +49,35 @@ def check_two_in_row(button):
             for f in i:
                 if button[f] == text_none:
                     button[f] = text_o
-                    # print('проверка 2 в ряд есть:' + str(button))
-                    break
-                    # return button
-            break
+                    return button
 
-    # print('2 в ряд нету')
-    # return button_true
-    return button
+
+# check if there are two 'O' in one row and one vacant place
+# return True or False
+def check_two_o_in_row(button):
+    lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
+    for i in lines:
+        if button[i[0]] == button[i[1]] == text_o or\
+            button[i[0]] == button[i[2]] == text_o or\
+            button[i[1]] == button[i[2]] == text_o:
+            for f in i:
+                if button[f] == text_none:
+                    return True
+    return False
+
+
+# add 'O' on the fild to win
+# return list of buttons that contains 'O'
+def add_o_if_two_o_in_row(button):
+    lines = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
+    for i in lines:
+        if button[i[0]] == button[i[1]] == text_o or\
+            button[i[0]] == button[i[2]] == text_o or\
+            button[i[1]] == button[i[2]] == text_o:
+            for f in i:
+                if button[f] == text_none:
+                    button[f] = text_o
+                    return button
 
 
 
@@ -48,33 +85,21 @@ def check_two_in_row(button):
 
 # func add 'O' in game keyboard
 def add_o(button):
-    print('add_o is working. button на входе = ' + str(button))
-
-    button1 = button[::]
-    # почему то после того как проверка на 2 в ряд положительна, работает эта функция:
-    check_2_button = check_two_in_row(button)
-    print('check_2_button = '+ str(check_2_button))
-    # print('button1 = ' + str(button1))
-
-    if check_2_button == button1:
-        print('check_two_in_row False')
-
-        while True:
-            # add 'O' randomly
-            random_index_o = randint(0,8)
-            # check if random index is free
-            if button[random_index_o] == text_none:
-                button[random_index_o] = text_o
-                # print('false way check_two_in_row')
-                # print(button)
-                return button
-
-    else:
-        button = check_two_in_row(button)
-        # print('check_two_in_row True')
-        # print(button)
+    if check_two_o_in_row(button):
+        button = add_o_if_two_o_in_row(button)
         return button
-
+    else:
+        if check_two_x_in_row(button):
+            button = add_o_if_two_x_in_row(button)
+            return button
+        else:
+            while True:
+                # add 'O' randomly
+                random_index_o = randint(0,8)
+                # check if random index is free
+                if button[random_index_o] == text_none:
+                    button[random_index_o] = text_o
+                    return button
 
 
 
@@ -112,6 +137,7 @@ def inline_button_pressed(update, context):
         button = user_data['buttons']
 
     # print('на входе в функцию: ' + str(button))
+
 
     # add user's X to keyboard
     try:
