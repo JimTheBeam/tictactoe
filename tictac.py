@@ -108,7 +108,8 @@ def main():
             states={
                 'GAME' : [CallbackQueryHandler(inline_button_pressed)]
             },
-            fallbacks=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game)]
+            fallbacks=[MessageHandler(Filters.regex('^(Play TicTacToe)$'), start_game),
+            CommandHandler('start', start)]
             )
     dp.add_handler(game_handler)
 
